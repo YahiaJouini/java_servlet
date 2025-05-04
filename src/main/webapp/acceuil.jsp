@@ -1,97 +1,68 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="metier.Produit" %>
+<%@ page import="dao.ProduitDaoImpl" %>
+
+<%-- Authentication Check --%>
+<%
+String user = (String) session.getAttribute("user");
+if (user == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+%>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Accueil</title>
-<style>
-body {
-  font-family: 'Helvetica Neue', sans-serif;
-  background-color: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.container {
-  width: 320px;
-  padding: 30px;
-  background-color: #ffffff;
-  border: 3px solid #000;
-  border-radius: 2px;
-}
-
-h1 {
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 24px;
-  letter-spacing: 2px;
-  margin-bottom: 30px;
-}
-
-.form-group {
-  margin-bottom: 25px;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-input[type="text"], input[type="password"] {
-  width: 100%;
-  height: 46px;
-  padding: 0 10px;
-  border: 2px solid #000;
-  border-radius: 0;
-  background-color: #fff;
-  box-sizing: border-box;
-  font-size: 16px;
-}
-
-input[type="text"]:focus, input[type="password"]:focus {
-  outline: none;
-  border-color: #555;
-}
-
-button[type="submit"] {
-  width: 100%;
-  height: 46px;
-  background-color: #000;
-  color: #fff;
-  border: 2px solid #000;
-  font-size: 16px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-button[type="submit"]:hover {
-  background-color: #fff;
-  color: #000;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .product { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+        .logout { float: right; }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<h1>Accueil</h1>
-<form action="acceuil" method="post">
-<div class="form-group">
-<label for="login">Login</label>
-<input type="text" id="login" name="login" placeholder="Entrez votre login">
-</div>
-<div class="form-group">
-<label for="password">Mot de passe</label>
-<input type="password" id="password" name="password" placeholder="Entrez votre mot de passe">
-</div>
-<button type="submit">Se connecter</button>
-</form>
-</div>
+    <div class="logout">
+        <form action="logout" method="post">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+    
+    <h1>Welcome <%= user %></h1>
+    
+    <h2>Product List</h2>
+    
+    <% 
+    // Check if the 'produits' attribute exists in the request, if not, fetch products
+    List<Produit> produits = (List<Produit>) request.getAttribute("produits");
+    
+    // If no products are set in the request, fetch them from database
+    if (produits == null || produits.isEmpty()) {
+        ProduitDaoImpl produitDao = new ProduitDaoImpl();
+        produits = produitDao.findAll();
+        request.setAttribute("produits", produits);
+    }
+    
+    if (produits != null && !produits.isEmpty()) { 
+    %>
+        <% for (Produit produit : produits) { %>
+            <div class="product">
+                <h3><%= produit.getNomProduit() %></h3>
+                <p>Price: <%= produit.getPrix() %> €</p>
+            </div>
+        <% } %>
+    <% } else { %>
+        <p>No products available.</p>
+    <% } %>
 </body>
 </html>

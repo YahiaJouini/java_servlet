@@ -9,14 +9,10 @@ public class SingletonConnection {
 
     static {
         try {
-            // Charger le driver JDBC pour MySQL
             Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // Créer la connexion à la base de données
             connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/db_j2ee", "root", "");
 
-            // Tester la connexion (optionnel)
             if (connection != null && !connection.isClosed()) {
                 System.out.println("Connection à la base de données réussie.");
             }

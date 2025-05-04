@@ -3,6 +3,15 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="metier.Produit" %>
 
+<%
+String user = (String) session.getAttribute("user");
+if (user == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+%>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
